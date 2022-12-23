@@ -71,16 +71,16 @@ function deleteProduct() { // Gère la suppression d'un produit avec mise à jou
 } 
 
 
-// -- Affichage du panier via localStorage --
-let listProducts = getProducts();
-
 // -- Variables --
 const selectors = ['#cartAndFormContainer>h1', '#totalQuantity', '#totalPrice', 'order'];
 let totalPrice = [];
 let totalQuantity = [];
 let orderPrice = [];
 let orderQuantity =[];
- 
+
+// -- Affichage du panier via localStorage --
+let listProducts = getProducts();
+
 // -- Cas du panier vide --
 if (listProducts.length == 0 ) { 
     try {
@@ -105,7 +105,6 @@ if (listProducts.length == 0 ) {
             fetch(config.host + "/api/products/" + idProduct)
             .then(data => data.json())
             .then(jsonProduct => {
-                //console.log(jsonProduct);
                 let product = new Product(jsonProduct);
                 let priceProduct = parseInt(product.price) * quantityProduct;
                 totalQuantity.push(quantityProduct);
@@ -147,25 +146,8 @@ if (listProducts.length == 0 ) {
 }
 
 // ----------------------------------------
-// 
+// Champs formulaire et envoi des données à l'API (POST)
 //------------------------------------------
-
-// -- Variables --
-
-// -- Récupération des ID pour l'envoir des données à l'API  --
-let getProductsId = listProducts.map(item => item.id);
-console.log(getProductsId)
-
-const order = {
-    contact: {
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("lastName").value,
-        address: document.getElementById("address").value,
-        city: document.getElementById("city").value,
-        email: document.getElementById("email").value
-    },
-    products : getProductsId,
-}
 
 // -- Ajout de pattern pour validation des champs avec des lettres --
 let patternFirstName = document.querySelector("#firstName");
@@ -175,8 +157,42 @@ patternLastName.setAttribute("pattern", "[a-zA-Z-éèà]*");
 let patternCity = document.querySelector("#city");
 patternCity.setAttribute("pattern", "[a-zA-Z-éèà]*");
 
-document.querySelector(".cart__order__form__submit").addEventListener("click", async (e) => {
-    let valid = true;
+// -- Récupération des ID pour l'envoir des données à l'API  --
+let getProductsId = listProducts.map(parameter => parameter.id);
+
+document.querySelector(".cart__order__form__submit").addEventListener("click", function() {
+    loadConfig()
+    .then(data => {
+        config = data;
+        try {
+            fetch(config.host + "/api/products/order", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json', 
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contact: {
+                        firstName: document.getElementById("firstName").value,
+                        lastName: document.getElementById("lastName").value,
+                        address: document.getElementById("address").value,
+                        city: document.getElementById("city").value,
+                        email: document.getElementById("email").value,
+                        },
+                    products : getProductsId,
+                }),
+            })
+            .then(data => data.json())
+            .then(jsonOrder => {
+                document.location.href =`confirmation.html?orderId=${jsonOrder.orderId}`;
+                localStorage.clear(); 
+            });
+        } catch (Error) {
+            console.log("Erreur d'envoi des données à l'API", {Error});
+        }  
+    })
+})
+/*   let valid = true;
     for(let input of document.querySelectorAll(".cart__order__form__question")) {
         valid &= input.reportValidity();
         if(!valid) {
@@ -184,19 +200,4 @@ document.querySelector(".cart__order__form__submit").addEventListener("click", a
         }
     }
     if (valid) {
-        try {
-            const res = await fetch('http://localhost:3000/api/products/order', {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json",
-                },
-                body: JSON.stringify(order),
-            });
-            const confirm = await res.json();
-            window.location.href = "./confirmation.html?orderId=" + confirm.orderId;
-            localStorage.clear();
-        } catch (error) {
-            console.log(`erreur : ${error}`);
-        }
-    }
-})
+    }*/
