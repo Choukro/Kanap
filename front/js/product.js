@@ -73,7 +73,7 @@ else{
 // -- Variables --
 const addToCart = document.getElementById('addToCart');
 const productColor = document.getElementById('colors');
-const productQuantity = document.getElementById('quantity')
+const productQuantity = document.getElementById('quantity');
 
 // -- Fonctions --
 function getProducts(){ // Lecture des données du produit au format JSON du LocalStorage 
@@ -104,7 +104,7 @@ addToCart.addEventListener('click', () => {
         alert("🎨 Veuillez choisir une couleur") 
         return;
     }
-    if (productQuantity.value ==0 || productQuantity.value > 100) { // Si la quantité est nulle ou est supérieure à 100, un message est affiché à l'écran
+    if (productQuantity.value == 0 || productQuantity.value > 100) { // Si la quantité est nulle ou est supérieure à 100, un message est affiché à l'écran
         alert("🔢 Veuillez sélectionner une quantité entre 1 et 100") 
         return;
     }
