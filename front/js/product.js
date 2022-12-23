@@ -40,33 +40,18 @@ if (productId !== null) {
         .then(jsonProduct => {
             //console.log(jsonProduct);
             let product = new Product(jsonProduct);
-            document.title = product.name; // Ajout du nom du produit au title de la page 
+            document.title = product.name; // Ajout du nom du produit au title de la page
+            const selectors = [".item__img", "#title", "#price", "#description", "#colors"];
             try {
-                document.querySelector(".item__img").innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}">`
-            } catch (Error) {
-                console.log("Possible changement du sélecteur '.item__img' dans le fichier product.html", {Error});
-            }
-            try {
-                document.querySelector("#title").innerHTML += `${product.name}`
-            } catch (Error) {
-                console.log("Possible changement du sélecteur '#title' dans le fichier product.html", {Error});
-            }
-            try {
-                document.querySelector("#price").innerHTML += `${product.price}`
-            } catch (Error) {
-                console.log("Possible changement du sélecteur '#price' dans le fichier product.html", {Error});
-            }
-            try {
-                document.querySelector("#description").innerHTML += `${product.description}`
-            } catch (Error) {
-                console.log("Possible changement du sélecteur '#description' dans le fichier product.html", {Error});
-            }
-            try {
+                document.querySelector(selectors[0]).innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}">`
+                document.querySelector(selectors[1]).innerHTML += `${product.name}`
+                document.querySelector(selectors[2]).innerHTML += `${product.price}`
+                document.querySelector(selectors[3]).innerHTML += `${product.description}`
                 product.colors.forEach(element => {
-                    document.querySelector("#colors").innerHTML += `<option value="${element}">${element}</option>`
-                    }); 
+                    document.querySelector(selectors[4]).innerHTML += `<option value="${element}">${element}</option>`
+                }); 
             } catch (Error) {
-                console.log("Possible changement du sélecteur '#colors' dans le fichier product.html", {Error});
+                console.log("Possible changement des sélecteurs dans le fichier product.html", {selectors}, {Error});
             }
         })
         .catch(Error => {
