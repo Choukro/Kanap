@@ -106,7 +106,7 @@ if (listProducts.length == 0 ) {
             .then(data => data.json())
             .then(jsonProduct => {
                 let product = new Product(jsonProduct);
-                let priceProduct = parseInt(product.price) * quantityProduct;
+                let priceProduct = parseInt(product.price) * quantityProduct; // Si prix unitaire pour chaque produit, cette variable peut être supprimée 
                 totalQuantity.push(quantityProduct);
                 totalPrice.push(priceProduct);
                 try {
@@ -134,8 +134,8 @@ if (listProducts.length == 0 ) {
                 } catch (Error) {
                     console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
                 }
-                orderPrice = totalPrice.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-                orderQuantity = totalQuantity.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+                orderPrice = totalPrice.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul du montant total
+                orderQuantity = totalQuantity.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul de la quantité totale
                 document.querySelector(selectors[1]).innerHTML = orderQuantity;
                 document.querySelector(selectors[2]).innerHTML = orderPrice;
                 changeQuantity();
@@ -151,7 +151,7 @@ if (listProducts.length == 0 ) {
         let getProductsId = listProducts.map(parameter => parameter.id); // Récupération des ID pour l'envoir des données à l'API 
         document.querySelector(".cart__order__form__submit").addEventListener("click", function() {
             var valid = true;
-            for(let input of document.querySelectorAll(".cart__order__form__question input")) {
+            for(let input of document.querySelectorAll(".cart__order__form__question input")) { // Vérifie les données de saisies de l'utilsiateur
                 valid &= input.reportValidity();
                 if(!valid) {
                     break;
@@ -159,7 +159,7 @@ if (listProducts.length == 0 ) {
             }
             if (valid) {
                 try {
-                    fetch(config.host + "/api/products/order", {
+                    fetch(config.host + "/api/products/order", { //Envoi de la requête POST sur l'API
                         method: "POST",
                         headers: {
                             'Accept': 'application/json', 
@@ -178,11 +178,11 @@ if (listProducts.length == 0 ) {
                     })
                     .then(data => data.json())
                     .then(jsonOrder => {
-                        document.location.href =`confirmation.html?orderId=${jsonOrder.orderId}`;
-                        localStorage.clear(); 
+                        document.location.href =`confirmation.html?orderId=${jsonOrder.orderId}`; //Rediriger l’utilisateur sur la page Confirmation, en passant l’id de commande dans l’URL
+                        localStorage.clear(); // Effacement du LocalStorage
                     });
                 } catch (Error) {
-                    console.log("Erreur d'envoi des données à l'API", {Error});
+                    console.log("Erreur de la requête POST sur l'API", {Error});
                 }
             }
         })
