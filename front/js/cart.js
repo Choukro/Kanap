@@ -142,62 +142,49 @@ if (listProducts.length == 0 ) {
                 deleteProduct();
             })
         }
+        let patternFirstName = document.querySelector("#firstName"); // Ajout de pattern pour validation du prénom
+        patternFirstName.setAttribute("pattern", "[a-zA-Z-éèà]*"); 
+        let patternLastName = document.querySelector("#lastName"); // Ajout de pattern pour validation du Nom
+        patternLastName.setAttribute("pattern", "[a-zA-Z-éèà]*");
+        let patternCity = document.querySelector("#city"); // Ajout de pattern pour validation de la ville
+        patternCity.setAttribute("pattern", "[a-zA-Z-éèà]*");
+        let getProductsId = listProducts.map(parameter => parameter.id); // Récupération des ID pour l'envoir des données à l'API 
+        document.querySelector(".cart__order__form__submit").addEventListener("click", function() {
+            var valid = true;
+            for(let input of document.querySelectorAll(".cart__order__form__question input")) {
+                valid &= input.reportValidity();
+                if(!valid) {
+                    break;
+                }
+            }
+            if (valid) {
+                try {
+                    fetch(config.host + "/api/products/order", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json', 
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            contact: {
+                                firstName: document.getElementById("firstName").value,
+                                lastName: document.getElementById("lastName").value,
+                                address: document.getElementById("address").value,
+                                city: document.getElementById("city").value,
+                                email: document.getElementById("email").value,
+                                },
+                            products : getProductsId,
+                        }),
+                    })
+                    .then(data => data.json())
+                    .then(jsonOrder => {
+                        document.location.href =`confirmation.html?orderId=${jsonOrder.orderId}`;
+                        localStorage.clear(); 
+                    });
+                } catch (Error) {
+                    console.log("Erreur d'envoi des données à l'API", {Error});
+                }
+            }
+        })
     })
 }
-
-// ----------------------------------------
-// Champs formulaire et envoi des données à l'API (POST)
-//------------------------------------------
-
-// -- Ajout de pattern pour validation des champs avec des lettres --
-let patternFirstName = document.querySelector("#firstName");
-patternFirstName.setAttribute("pattern", "[a-zA-Z-éèà]*");
-let patternLastName = document.querySelector("#lastName");
-patternLastName.setAttribute("pattern", "[a-zA-Z-éèà]*");
-let patternCity = document.querySelector("#city");
-patternCity.setAttribute("pattern", "[a-zA-Z-éèà]*");
-
-// -- Récupération des ID pour l'envoir des données à l'API  --
-let getProductsId = listProducts.map(parameter => parameter.id);
-
-document.querySelector(".cart__order__form__submit").addEventListener("click", function() {
-    loadConfig()
-    .then(data => {
-        config = data;
-        try {
-            fetch(config.host + "/api/products/order", {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json', 
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contact: {
-                        firstName: document.getElementById("firstName").value,
-                        lastName: document.getElementById("lastName").value,
-                        address: document.getElementById("address").value,
-                        city: document.getElementById("city").value,
-                        email: document.getElementById("email").value,
-                        },
-                    products : getProductsId,
-                }),
-            })
-            .then(data => data.json())
-            .then(jsonOrder => {
-                document.location.href =`confirmation.html?orderId=${jsonOrder.orderId}`;
-                localStorage.clear(); 
-            });
-        } catch (Error) {
-            console.log("Erreur d'envoi des données à l'API", {Error});
-        }  
-    })
-})
-/*   let valid = true;
-    for(let input of document.querySelectorAll(".cart__order__form__question")) {
-        valid &= input.reportValidity();
-        if(!valid) {
-            break;
-        }
-    }
-    if (valid) {
-    }*/
