@@ -107,7 +107,7 @@ function sendFormData(formData, getProductsId) { //Envoie les données saisies p
         }
     };
     console.log(options);
-    fetch("http://localhost:3000/api/products/order", options)
+    fetch(config.host + "/api/products/order", options)
     .then(data => {
         if(!data.ok){
             console.log("Erreur de la requête POST sur l'API - retour du serveur : ", data.status);
