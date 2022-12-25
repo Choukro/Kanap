@@ -36,26 +36,32 @@ if (productId !== null) {
     .then(data => {
         config = data;
         fetch(config.host + "/api/products/" + productId)
-        .then(data => data.json())
-        .then(jsonProduct => {
-            //console.log(jsonProduct);
-            let product = new Product(jsonProduct);
-            document.title = product.name; // Ajout du nom du produit au title de la page
-            const selectors = [".item__img", "#title", "#price", "#description", "#colors"];
-            try {
-                document.querySelector(selectors[0]).innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}">`
-                document.querySelector(selectors[1]).innerHTML += `${product.name}`
-                document.querySelector(selectors[2]).innerHTML += `${product.price}`
-                document.querySelector(selectors[3]).innerHTML += `${product.description}`
-                product.colors.forEach(element => {
-                    document.querySelector(selectors[4]).innerHTML += `<option value="${element}">${element}</option>`
-                }); 
-            } catch (Error) {
-                console.log("Possible changement des sélecteurs dans le fichier product.html", {selectors}, {Error});
+        .then(data => {
+            if(!data.ok){
+                console.log("Problème d'accès à l'API - voir le fichier config.json - retour du serveur : ", data.status);
+                alert ("❌ Une erreur s'est produite. Le produit sélectionné n'a pas été trouvé !\n\n💡 Essayez d'actualisez la page\n\n🙏 Nous vous prions de nous excuser pour la gêne occasionnée !");
+            } else {
+                data.json().then(jsonProduct => {
+                    //console.log(jsonProduct);
+                    let product = new Product(jsonProduct);
+                    document.title = product.name; // Ajout du nom du produit au title de la page
+                    const selectors = [".item__img", "#title", "#price", "#description", "#colors"];
+                    try {
+                        document.querySelector(selectors[0]).innerHTML += `<img src="${product.imageUrl}" alt="${product.altTxt}">`
+                        document.querySelector(selectors[1]).innerHTML += `${product.name}`
+                        document.querySelector(selectors[2]).innerHTML += `${product.price}`
+                        document.querySelector(selectors[3]).innerHTML += `${product.description}`
+                        product.colors.forEach(element => {
+                            document.querySelector(selectors[4]).innerHTML += `<option value="${element}">${element}</option>`
+                        }); 
+                    } catch (Error) {
+                        console.log("Possible changement des sélecteurs dans le fichier product.html", {selectors}, {Error});
+                    }
+                })
             }
         })
         .catch(Error => {
-            console.log("Problème d'accès à l'API - voir le fichier config.json", {Error});
+            console.log("Problème connexion serveur", {Error});
             alert("❌ Une erreur s'est produite. Le produit sélectionné n'a pas été trouvé !\n\n💡 Essayez d'actualisez la page\n\n🙏 Nous vous prions de nous excuser pour la gêne occasionnée !");
         })
     })

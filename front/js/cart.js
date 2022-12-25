@@ -124,7 +124,7 @@ function sendFormData(formData, getProductsId) { //Envoie les données saisies p
 
 // -- Variables --
 const selectors = ['#cartAndFormContainer>h1', '#totalQuantity', '#totalPrice', '.cart__order'];
-const otherSelectors = [".cart__order__form__submit", ".cart__order__form__question input", '#firstName', '#lastName', '#address', '#city', '#email'];
+const otherSelectors = [".cart__order__form__submit input", ".cart__order__form__question input", '#firstName', '#lastName', '#address', '#city', '#email'];
 let totalPrice = [];
 let totalQuantity = [];
 let orderPrice = [];
@@ -144,40 +144,50 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
             let quantityProduct = listProducts[i].quantity;
             config = data;
             fetch(config.host + "/api/products/" + idProduct)
-            .then(data => data.json())
-            .then(jsonProduct => {
-                let product = new Product(jsonProduct);
-                let priceProduct = parseInt(product.price) * quantityProduct; // Si prix unitaire pour chaque produit, cette variable peut être supprimée 
-                totalQuantity.push(quantityProduct);
-                totalPrice.push(priceProduct);
-                try {
-                    document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${idProduct}" data-color="${colorProduct}">
-                                                                        <div class="cart__item__img">
-                                                                        <img src="${product.imageUrl}" alt="${product.altTxt}">
-                                                                        </div>
-                                                                        <div class="cart__item__content">
-                                                                        <div class="cart__item__content__description">
-                                                                            <h2>${product.name}</h2>
-                                                                            <p>Couleur : ${colorProduct}</p>
-                                                                            <p>Prix unitaire : ${product.price} €</p>
-                                                                        </div>
-                                                                        <div class="cart__item__content__settings">
-                                                                            <div class="cart__item__content__settings__quantity">
-                                                                            <p>Qté :</p>
-                                                                            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantityProduct}">
-                                                                            </div>
-                                                                            <div class="cart__item__content__settings__delete">
-                                                                            <p class="deleteItem">Supprimer</p>
-                                                                            </div>
-                                                                        </div>
-                                                                        </div>
-                                                                    </article>`
-                } catch (Error) {
-                    console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
+            .then(data => {
+                if(!data.ok){
+                    console.log("Problème d'accès à l'API - voir le fichier config.json - retour du serveur : ", data.status);
+                    alert ("❌ Une erreur s'est produite lors du chargement de votre panier. \n\n 💡 Essayez d'actualisez la page pour recharger notre catalogue\n\n🙏 Nous vous prions de nous excuser pour la gêne occasionnée !");
+                } else {
+                    data.json().then(jsonProduct => {
+                        let product = new Product(jsonProduct);
+                        let priceProduct = parseInt(product.price) * quantityProduct; // Si prix unitaire pour chaque produit, cette variable peut être supprimée 
+                        totalQuantity.push(quantityProduct);
+                        totalPrice.push(priceProduct);
+                        try {
+                            document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${idProduct}" data-color="${colorProduct}">
+                                                                                <div class="cart__item__img">
+                                                                                <img src="${product.imageUrl}" alt="${product.altTxt}">
+                                                                                </div>
+                                                                                <div class="cart__item__content">
+                                                                                <div class="cart__item__content__description">
+                                                                                    <h2>${product.name}</h2>
+                                                                                    <p>Couleur : ${colorProduct}</p>
+                                                                                    <p>Prix unitaire : ${product.price} €</p>
+                                                                                </div>
+                                                                                <div class="cart__item__content__settings">
+                                                                                    <div class="cart__item__content__settings__quantity">
+                                                                                    <p>Qté :</p>
+                                                                                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantityProduct}">
+                                                                                    </div>
+                                                                                    <div class="cart__item__content__settings__delete">
+                                                                                    <p class="deleteItem">Supprimer</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                                </div>
+                                                                            </article>`
+                        } catch (Error) {
+                            console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
+                        }
+                        updatedCart();
+                        changeQuantity();
+                        deleteProduct();
+                    })
                 }
-                updatedCart();
-                changeQuantity();
-                deleteProduct();
+            })
+            .catch(Error => {
+                console.log("Problème connexion serveur", {Error});
+                alert("❌ Une erreur s'est produite lors du chargement de votre panier. \n\n 💡 Essayez d'actualisez la page pour recharger notre catalogue\n\n🙏 Nous vous prions de nous excuser pour la gêne occasionnée !");
             })
         }
         let patternFirstName = document.querySelector("#firstName"); // Ajout de pattern pour validation du prénom
