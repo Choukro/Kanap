@@ -15,9 +15,9 @@ async function loadConfig() {
 // Classe pour créer et initialiser l'objet "Product" permettant de récupérer les détails des produits
 //------------------------------------------
 class Product {
-    constructor(jsonProduct) {
+    constructor(jsonProduct) { 
         jsonProduct && Object.assign(this, jsonProduct);
-        //console.log(jsonProduct);
+        //console.log(jsonProduct)
     }
 }
 
@@ -34,7 +34,7 @@ loadConfig() // Appel de la fonction loadConfig
             console.log("Problème d'accès à l'API - voir le fichier config.json - retour du serveur : ", data.status);
             alert ("❌ Une erreur s'est produite et vous n'avez pas accès à notre catalogue de produits.\n\n💡 Essayez d'actualisez la page pour recharger notre catalogue\n\n🙏 Nous vous prions de nous excuser pour la gêne occasionnée !");
         } else {
-            data.json().then(jsonListProduct => { //Liste des produits au format JSON 
+            data.json().then(jsonListProduct => { //Liste des produits de l'API au format JSON en objet JS
             //console.log(jsonListProduct);
                 for(let jsonProduct of jsonListProduct) { //Boucle pour parcourir le tableau et créer une variable jsonProduct qui sera utilisé par la suite
                     let product = new Product(jsonProduct); // Utilisation de la classe Product : pour chaque produit, création d'un objet product en lui passant le JSON
