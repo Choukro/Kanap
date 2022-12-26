@@ -39,7 +39,7 @@ function cartEmpty() { // Gère le cas du panier vide
     }
 }
 
-function updatedCart() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
+function updatedCart(totalPrice, totalQuantity) { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
     orderPrice = totalPrice.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul du montant total
     orderQuantity = totalQuantity.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul de la quantité totale
     document.querySelector(selectors[1]).innerHTML = orderQuantity;
@@ -47,9 +47,12 @@ function updatedCart() { // -- Gére la mise à jour du prix total de la command
 }
 
 
-function changeQuantity() { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
+function changeQuantity(listProducts) { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
     try {
-        let changeQuantity = document.querySelectorAll(".itemQuantity");
+        let changeQuantity = document.querySelectorAll("input.itemQuantity");
+/*         console.log("====")
+        console.log(changeQuantity)
+        console.log("====") */
         changeQuantity.forEach((item) => {
             item.addEventListener("change", (event) => {
                 event.preventDefault();
@@ -69,9 +72,12 @@ function changeQuantity() { // Gère le changement de la quantité d'un produit 
     } 
 }
 
-function deleteProduct() { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
+function deleteProduct(listProducts) { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
     try {
-        let deleteProduct = document.querySelectorAll(".deleteItem");
+        let deleteProduct = document.querySelectorAll("p.deleteItem");
+/*         console.log("====")
+        console.log(deleteProduct)
+        console.log("====") */
         deleteProduct.forEach((item) => {
             item.addEventListener("click", (event) => {
                 event.preventDefault();
@@ -98,7 +104,9 @@ function sendFormData(formData, getProductsId) { //Envoie les données saisies p
         contact,
         products,
     }
-    console.log(dataSent);
+/*     console.log("====")
+    console.log(dataSent)
+    console.log("====") */
     const options = {
         method: 'POST',
         body: JSON.stringify(dataSent),
@@ -106,7 +114,9 @@ function sendFormData(formData, getProductsId) { //Envoie les données saisies p
           'Content-Type': 'application/json',
         }
     };
-    console.log(options);
+/*     console.log("====")
+    console.log(options)
+    console.log("====") */
     fetch(config.host + "/api/products/order", options)
     .then(data => {
         if(!data.ok){
@@ -138,11 +148,20 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
     document.title = "Votre panier";
     loadConfig()
     .then(data => {
+/*         console.log("====")
+        console.log(data)
+        console.log("====") */
         for (i = 0 ; i < listProducts.length ; i += 1) {
             let idProduct = listProducts[i].id;
             let colorProduct = listProducts[i].color;
             let quantityProduct = listProducts[i].quantity;
+/*             console.log("====")
+            console.log(i, idProduct, colorProduct, quantityProduct)
+            console.log("====") */
             config = data;
+/*             console.log("====")
+            console.log(config.host)
+            console.log("====") */
             fetch(config.host + "/api/products/" + idProduct)
             .then(data => {
                 if(!data.ok){
@@ -179,9 +198,9 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                         } catch (Error) {
                             console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
                         }
-                        updatedCart();
-                        changeQuantity();
-                        deleteProduct();
+                        updatedCart(totalPrice, totalQuantity);
+                        changeQuantity(listProducts);
+                        deleteProduct(listProducts);
                     })
                 }
             })
