@@ -64,9 +64,6 @@ function changeQuantity(listProducts) { // Gère le changement de la quantité d
             item.addEventListener("change", (event) => {
                 event.preventDefault();
                 let changeProduct = item.closest('article');
-                console.log("====")
-                console.log(changeProduct)
-                console.log("====")
                 const tempChangeProduct = listProducts.find(element => element.id == changeProduct.dataset.id && element.color == changeProduct.dataset.color);
                 if (parseInt(item.value) == 0 || parseInt(item.value) > 100) { // Si la quantité est nulle ou est supérieure à 100, un message est affiché à l'écran
                     alert("🔢 Veuillez sélectionner une quantité entre 1 et 100.\n\n👉 Veuillez modifier la quantité choisie !") 
