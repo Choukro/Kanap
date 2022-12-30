@@ -39,10 +39,20 @@ function cartEmpty() { // Gère le cas du panier vide
     }
 }
 
-function updatedCart(totalPrice, totalQuantity) { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
+/* function updatedCart(totalPrice, totalQuantity) { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
     orderPrice = totalPrice.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul du montant total
     orderQuantity = totalQuantity.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul de la quantité totale
     document.querySelector(selectors[1]).innerHTML = orderQuantity;
+    document.querySelector(selectors[2]).innerHTML = orderPrice;
+} */
+
+function updateQuantity() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
+    orderQuantity = totalQuantity.reduce((orderQuantity, totalQuantity) => orderQuantity + totalQuantity, 0); // Calcul de la quantité totale
+    document.querySelector(selectors[1]).innerHTML = orderQuantity;
+}
+
+function updatePrice() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
+    orderPrice = totalPrice.reduce((orderPrice, totalPrice) => orderPrice + totalPrice, 0); // Calcul du montant total
     document.querySelector(selectors[2]).innerHTML = orderPrice;
 }
 
@@ -50,13 +60,13 @@ function updatedCart(totalPrice, totalQuantity) { // -- Gére la mise à jour du
 function changeQuantity(listProducts) { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
     try {
         let changeQuantity = document.querySelectorAll("input.itemQuantity");
-/*         console.log("====")
-        console.log(changeQuantity)
-        console.log("====") */
         changeQuantity.forEach((item) => {
             item.addEventListener("change", (event) => {
                 event.preventDefault();
                 let changeProduct = item.closest('article');
+                console.log("====")
+                console.log(changeProduct)
+                console.log("====")
                 const tempChangeProduct = listProducts.find(element => element.id == changeProduct.dataset.id && element.color == changeProduct.dataset.color);
                 if (parseInt(item.value) == 0 || parseInt(item.value) > 100) { // Si la quantité est nulle ou est supérieure à 100, un message est affiché à l'écran
                     alert("🔢 Veuillez sélectionner une quantité entre 1 et 100.\n\n👉 Veuillez modifier la quantité choisie !") 
@@ -64,6 +74,9 @@ function changeQuantity(listProducts) { // Gère le changement de la quantité d
                 }
                 tempChangeProduct.quantity = parseInt(item.value);
                 saveProduct(listProducts);
+                //---------------------
+                orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0);
+                document.querySelector(selectors[1]).innerHTML = orderQuantity;
                 window.location.reload();
             })
         })
@@ -85,6 +98,11 @@ function deleteProduct(listProducts) { // Gère la suppression d'un produit avec
                 const tempDeleteProduct = listProducts.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
                 listProducts = listProducts.filter(objet => objet != tempDeleteProduct);
                 saveProduct(listProducts);
+                const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
+                productToDelete.remove();
+                //---------------------
+                orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0);
+                document.querySelector(selectors[1]).innerHTML = orderQuantity;
                 window.location.reload();
             })
         })
@@ -198,7 +216,15 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                         } catch (Error) {
                             console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
                         }
-                        updatedCart(totalPrice, totalQuantity);
+                        //updatedCart(totalPrice, totalQuantity);
+                        updateQuantity()
+                        /* console.log("====")
+                        console.log(orderQuantity)
+                        console.log("====") */
+                        updatePrice()
+                        /* console.log("====")
+                        console.log(orderPrice)
+                        console.log("====") */
                         changeQuantity(listProducts);
                         deleteProduct(listProducts);
                     })
