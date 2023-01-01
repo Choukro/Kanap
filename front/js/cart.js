@@ -39,25 +39,18 @@ function cartEmpty() { // Gère le cas du panier vide
     }
 }
 
-/* function updatedCart(totalPrice, totalQuantity) { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
-    orderPrice = totalPrice.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul du montant total
-    orderQuantity = totalQuantity.reduce((accumulator, currentValue) => accumulator + currentValue, 0); // Calcul de la quantité totale
-    document.querySelector(selectors[1]).innerHTML = orderQuantity;
-    document.querySelector(selectors[2]).innerHTML = orderPrice;
-} */
-
 function updateQuantity() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
-    orderQuantity = totalQuantity.reduce((orderQuantity, totalQuantity) => orderQuantity + totalQuantity, 0); // Calcul de la quantité totale
+    orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0); // Calcul de la quantité totale
     document.querySelector(selectors[1]).innerHTML = orderQuantity;
 }
 
 function updatePrice() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
-    orderPrice = totalPrice.reduce((orderPrice, totalPrice) => orderPrice + totalPrice, 0); // Calcul du montant total
+    orderPrice = tempProduct.reduce((orderPrice, tempProduct) => orderPrice + tempProduct.quantity * tempProduct.price,0); // Calcul du montant total
     document.querySelector(selectors[2]).innerHTML = orderPrice;
 }
 
 
-function changeQuantity(listProducts) { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
+function changeQuantity(listProducts, tempProduct) { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
     try {
         let changeQuantity = document.querySelectorAll("input.itemQuantity");
         changeQuantity.forEach((item) => {
@@ -71,10 +64,10 @@ function changeQuantity(listProducts) { // Gère le changement de la quantité d
                 }
                 tempChangeProduct.quantity = parseInt(item.value);
                 saveProduct(listProducts);
-                //---------------------
-                orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0);
-                document.querySelector(selectors[1]).innerHTML = orderQuantity;
-                window.location.reload();
+                const tempChange = tempProduct.find(element => element.id == changeProduct.dataset.id && element.color == changeProduct.dataset.color);
+                tempChange.quantity = parseInt(item.value);
+                updateQuantity()
+                updatePrice()
             })
         })
     } catch (Error) {
@@ -82,7 +75,7 @@ function changeQuantity(listProducts) { // Gère le changement de la quantité d
     } 
 }
 
-function deleteProduct(listProducts) { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
+function deleteProduct(listProducts, tempProduct) { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
     try {
         let deleteProduct = document.querySelectorAll("p.deleteItem");
 /*         console.log("====")
@@ -95,11 +88,13 @@ function deleteProduct(listProducts) { // Gère la suppression d'un produit avec
                 const tempDeleteProduct = listProducts.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
                 listProducts = listProducts.filter(objet => objet != tempDeleteProduct);
                 saveProduct(listProducts);
-                const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
+                /* const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
                 productToDelete.remove();
                 //---------------------
-                orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0);
-                document.querySelector(selectors[1]).innerHTML = orderQuantity;
+                const tempDelete = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
+                tempProduct = tempProduct.filter(objet => objet != tempDelete);
+                updatePrice()
+                updateQuantity() */
                 window.location.reload();
             })
         })
@@ -150,10 +145,9 @@ function sendFormData(formData, getProductsId) { //Envoie les données saisies p
 // -- Variables --
 const selectors = ['#cartAndFormContainer>h1', '#totalQuantity', '#totalPrice', '.cart__order'];
 const otherSelectors = [".cart__order__form__submit input", ".cart__order__form__question input", '#firstName', '#lastName', '#address', '#city', '#email'];
-let totalPrice = [];
-let totalQuantity = [];
 let orderPrice = [];
 let orderQuantity =[];
+let tempProduct = [];
 
 let listProducts = getProducts(); // -- Affichage du panier via localStorage --
 
@@ -186,8 +180,7 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                     data.json().then(jsonProduct => {
                         let product = new Product(jsonProduct);
                         let priceProduct = parseInt(product.price) * quantityProduct; // Si prix unitaire pour chaque produit, cette variable peut être supprimée 
-                        totalQuantity.push(quantityProduct);
-                        totalPrice.push(priceProduct);
+                        tempProduct.push({id: product._id, color: colorProduct, quantity: parseInt(quantityProduct), price : parseInt(product.price)});
                         try {
                             document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${idProduct}" data-color="${colorProduct}">
                                                                                 <div class="cart__item__img">
@@ -213,6 +206,9 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                         } catch (Error) {
                             console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
                         }
+                        /* console.log("====")
+                        console.log(temp)
+                        console.log("====") */
                         //updatedCart(totalPrice, totalQuantity);
                         updateQuantity()
                         /* console.log("====")
@@ -222,8 +218,8 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                         /* console.log("====")
                         console.log(orderPrice)
                         console.log("====") */
-                        changeQuantity(listProducts);
-                        deleteProduct(listProducts);
+                        changeQuantity(listProducts, tempProduct);
+                        deleteProduct(listProducts, tempProduct);
                     })
                 }
             })
