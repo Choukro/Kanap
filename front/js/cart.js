@@ -170,7 +170,7 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                 } else {
                     data.json().then(jsonProduct => {
                         let product = new Product(jsonProduct);
-                        tempProduct.push({id: product._id, color: colorProduct, quantity: parseInt(quantityProduct), price : parseInt(product.price)});
+                        tempProduct.push({id: idProduct, color: colorProduct, quantity: parseInt(quantityProduct), price : parseInt(product.price)});
                         try {
                             document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${idProduct}" data-color="${colorProduct}">
                                                                                 <div class="cart__item__img">
