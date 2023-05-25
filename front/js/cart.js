@@ -40,8 +40,11 @@ function cartEmpty() { // Gère le cas du panier vide
 }
 
 function updateQuantity() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
-    orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0); // Calcul de la quantité totale
+    orderQuantity = tempProduct.reduce((orderQuantity, tempProduct) => orderQuantity + tempProduct.quantity,0); // Calcul de la quantité totale
     document.querySelector(selectors[1]).innerHTML = orderQuantity;
+    if (orderQuantity == 0 ) { // -- Cas du panier vide --
+        cartEmpty();
+    }
 }
 
 function updatePrice() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
@@ -78,24 +81,20 @@ function changeQuantity(listProducts, tempProduct) { // Gère le changement de l
 function deleteProduct(listProducts, tempProduct) { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
     try {
         let deleteProduct = document.querySelectorAll("p.deleteItem");
-/*         console.log("====")
-        console.log(deleteProduct)
-        console.log("====") */
         deleteProduct.forEach((item) => {
             item.addEventListener("click", (event) => {
                 event.preventDefault();
                 let deleteitem = item.closest('article');
+                const tempChange = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
+                tempChange.quantity = 0;
+                const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
+                productToDelete.remove();
                 const tempDeleteProduct = listProducts.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
                 listProducts = listProducts.filter(objet => objet != tempDeleteProduct);
                 saveProduct(listProducts);
-                /* const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
-                productToDelete.remove();
-                //---------------------
-                const tempDelete = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
-                tempProduct = tempProduct.filter(objet => objet != tempDelete);
+                updateQuantity()
                 updatePrice()
-                updateQuantity() */
-                window.location.reload();
+                /*window.location.reload();*/
             })
         })
     } catch (Error) {
@@ -148,6 +147,7 @@ const otherSelectors = [".cart__order__form__submit input", ".cart__order__form_
 let orderPrice = [];
 let orderQuantity =[];
 let tempProduct = [];
+let regex = ["pattern","[a-zA-Z-éèà]*"];
 
 let listProducts = getProducts(); // -- Affichage du panier via localStorage --
 
@@ -157,20 +157,11 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
     document.title = "Votre panier";
     loadConfig()
     .then(data => {
-/*         console.log("====")
-        console.log(data)
-        console.log("====") */
         for (i = 0 ; i < listProducts.length ; i += 1) {
             let idProduct = listProducts[i].id;
             let colorProduct = listProducts[i].color;
             let quantityProduct = listProducts[i].quantity;
-/*             console.log("====")
-            console.log(i, idProduct, colorProduct, quantityProduct)
-            console.log("====") */
             config = data;
-/*             console.log("====")
-            console.log(config.host)
-            console.log("====") */
             fetch(config.host + "/api/products/" + idProduct)
             .then(data => {
                 if(!data.ok){
@@ -206,18 +197,8 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                         } catch (Error) {
                             console.log("Possible changement du sélecteur '#cart__items' dans le fichier cart.html", {Error});
                         }
-                        /* console.log("====")
-                        console.log(temp)
-                        console.log("====") */
-                        //updatedCart(totalPrice, totalQuantity);
                         updateQuantity()
-                        /* console.log("====")
-                        console.log(orderQuantity)
-                        console.log("====") */
                         updatePrice()
-                        /* console.log("====")
-                        console.log(orderPrice)
-                        console.log("====") */
                         changeQuantity(listProducts, tempProduct);
                         deleteProduct(listProducts, tempProduct);
                     })
@@ -228,12 +209,12 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                 alert("❌ Une erreur s'est produite lors du chargement de votre panier. \n\n 💡 Essayez d'actualisez la page pour recharger notre catalogue\n\n🙏 Nous vous prions de nous excuser pour la gêne occasionnée !");
             })
         }
-        let patternFirstName = document.querySelector("#firstName"); // Ajout de pattern pour validation du prénom
-        patternFirstName.setAttribute("pattern", "[a-zA-Z-éèà]*"); 
-        let patternLastName = document.querySelector("#lastName"); // Ajout de pattern pour validation du Nom
-        patternLastName.setAttribute("pattern", "[a-zA-Z-éèà]*");
-        let patternCity = document.querySelector("#city"); // Ajout de pattern pour validation de la ville
-        patternCity.setAttribute("pattern", "[a-zA-Z-éèà]*");
+        let patternFirstName = document.querySelector(otherSelectors[2]); // Ajout de pattern pour validation du prénom
+        patternFirstName.setAttribute(regex[0], regex[1]); 
+        let patternLastName = document.querySelector(otherSelectors[3]); // Ajout de pattern pour validation du Nom
+        patternLastName.setAttribute(regex[0], regex[1]);
+        let patternCity = document.querySelector(otherSelectors[5]); // Ajout de pattern pour validation de la ville
+        patternCity.setAttribute(regex[0], regex[1]);
         let getProductsId = listProducts.map(parameter => parameter.id); // Récupération des ID pour l'envoir des données à l'API 
         try {
             document.querySelector(otherSelectors[0]).addEventListener("click", (event) => {
