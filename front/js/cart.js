@@ -85,13 +85,13 @@ function deleteProduct(listProducts, tempProduct) { // Gère la suppression d'un
             item.addEventListener("click", (event) => {
                 event.preventDefault();
                 let deleteitem = item.closest('article');
-                const tempChange = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
-                tempChange.quantity = 0;
                 const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
                 productToDelete.remove();
                 const tempDeleteProduct = listProducts.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
                 listProducts = listProducts.filter(objet => objet != tempDeleteProduct);
                 saveProduct(listProducts);
+                const tempChange = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
+                tempChange.quantity = 0;
                 updateQuantity()
                 updatePrice()
                 /*window.location.reload();*/
