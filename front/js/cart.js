@@ -147,7 +147,7 @@ const otherSelectors = [".cart__order__form__submit input", ".cart__order__form_
 let orderPrice = [];
 let orderQuantity =[];
 let tempProduct = [];
-let regex = ["pattern","[a-zA-Z-éèà]*"];
+let regex = ["pattern","[a-zA-Zéèà]*"];
 
 let listProducts = getProducts(); // -- Affichage du panier via localStorage --
 
