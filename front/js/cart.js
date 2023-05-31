@@ -40,7 +40,7 @@ function cartEmpty() { // Gère le cas du panier vide
 }
 
 function updateQuantity() { // -- Gére la mise à jour du prix total de la commande ainsi que de la quantité de produits
-    orderQuantity = tempProduct.reduce((orderQuantity, tempProduct) => orderQuantity + tempProduct.quantity,0); // Calcul de la quantité totale
+    orderQuantity = listProducts.reduce((orderQuantity, listProducts) => orderQuantity + listProducts.quantity,0); // Calcul de la quantité totale
     document.querySelector(selectors[1]).innerHTML = orderQuantity;
     if (orderQuantity == 0 ) { // -- Cas du panier vide --
         cartEmpty();
@@ -53,7 +53,7 @@ function updatePrice() { // -- Gére la mise à jour du prix total de la command
 }
 
 
-function changeQuantity(listProducts, tempProduct) { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
+function changeQuantity() { // Gère le changement de la quantité d'un produit avec mise à jour du LocalStorage et DOM
     try {
         let changeQuantity = document.querySelectorAll("input.itemQuantity");
         changeQuantity.forEach((item) => {
@@ -78,23 +78,23 @@ function changeQuantity(listProducts, tempProduct) { // Gère le changement de l
     } 
 }
 
-function deleteProduct(listProducts, tempProduct) { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
+function deleteProduct() { // Gère la suppression d'un produit avec mise à jour du LocalStorage et DOM
     try {
         let deleteProduct = document.querySelectorAll("p.deleteItem");
         deleteProduct.forEach((item) => {
             item.addEventListener("click", (event) => {
                 event.preventDefault();
                 let deleteitem = item.closest('article');
-                const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
-                productToDelete.remove();
+                /*const productToDelete = document.querySelector(`article[data-id="${deleteitem.dataset.id}"][data-color="${deleteitem.dataset.color}"]`)
+                productToDelete.remove();*/
                 const tempDeleteProduct = listProducts.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
                 listProducts = listProducts.filter(objet => objet != tempDeleteProduct);
                 saveProduct(listProducts);
-                const tempChange = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
+                /*const tempChange = tempProduct.find(element => element.id == deleteitem.dataset.id && element.color == deleteitem.dataset.color);
                 tempChange.quantity = 0;
                 updateQuantity()
-                updatePrice()
-                /*window.location.reload();*/
+                updatePrice()*/
+                window.location.reload();
             })
         })
     } catch (Error) {
@@ -198,8 +198,8 @@ if (listProducts.length == 0 ) { // -- Cas du panier vide --
                         }
                         updateQuantity()
                         updatePrice()
-                        changeQuantity(listProducts, tempProduct);
-                        deleteProduct(listProducts, tempProduct);
+                        changeQuantity();
+                        deleteProduct();
                     })
                 }
             })
