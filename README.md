@@ -1,7 +1,8 @@
-# Kanap #
+# Kanap : E-commerce website in JavaScript#
 
-This is the front end and back end server for Project 5 of the Web Developer path.
+> 🖥️ **This is the front end and back end server of the e-commerce site for online sales of Kanap products.**
 
+![kanap](https://drive.google.com/file/d/1dKdtHLj06BlpLpVddZTQPWGFYTMOoHnK/view?usp=sharing)
 ### Back end Prerequisites ###
 
 You will need to have Node and `npm` installed locally on your machine.
