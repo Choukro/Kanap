@@ -4,11 +4,11 @@
 
 ![screenshot du site](./back/images/screenshot/85765683.png)
 
-## 🎯 Objectif :
+## 🎯 Objectif
 
 _Implémenter le nouveau site e-commerce de manière dynamique avec Javascript et rédiger le plan de tests unitaires de l'application._
 
-## ⚛️ Technologies :
+## ⚛️ Technologies
 ![javascript](./back/images/screenshot/js.svg)&nbsp;&nbsp;![html](./back/images/screenshot/html.svg)&nbsp;&nbsp;![css](./back/images/screenshot/css.svg)
 
 ## 🧞 Commandes
